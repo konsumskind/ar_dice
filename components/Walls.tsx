@@ -1,8 +1,6 @@
 import React from 'react';
 import { usePlane } from '@react-three/cannon';
 import { useThree } from '@react-three/fiber';
-import { useTexture } from '@react-three/drei';
-import { RepeatWrapping } from 'three';
 
 // Helper component for visual walls
 const WallVisual: React.FC<{
@@ -10,17 +8,10 @@ const WallVisual: React.FC<{
   rotation: [number, number, number];
   size: [number, number];
 }> = ({ position, rotation, size }) => {
-  // Load texture
-  const texture = useTexture('textures/wall.png');
-
-  // Configure texture repeating
-  texture.wrapS = texture.wrapT = RepeatWrapping;
-  texture.repeat.set(size[0] / 2, size[1] / 2); // Scale texture repeat based on size
-
   return (
     <mesh position={position} rotation={rotation} receiveShadow>
       <planeGeometry args={size} />
-      <meshStandardMaterial map={texture} roughness={0.8} />
+      <meshStandardMaterial color="white" roughness={0.8} />
     </mesh>
   );
 };
@@ -76,10 +67,10 @@ export const Walls: React.FC = () => {
   return (
     <group>
       {/* Floor Visual (5x5) */}
-      <WallVisual position={[0, 0, -2]} rotation={[0, 0, 0]} size={[width, height]} />
+      <WallVisual position={[0, 0, -2]} rotation={[0, 0, 0]} size={[99999, 99999]} />
 
-      {/* Ceiling Visual (5x5) */}
-      <WallVisual position={[0, 0, 8]} rotation={[0, -Math.PI, 0]} size={[width, height]} />
+      {/* Ceiling Visual (5x5)
+      <WallVisual position={[0, 0, 8]} rotation={[0, -Math.PI, 0]} size={[width, height]} /> */}
 
       {/* Left Wall Visual (YZ Plane -> args: [Depth, Height] based on rotation?) 
           Plane is XY. Rotated Y 90 -> YZ.
@@ -98,36 +89,36 @@ export const Walls: React.FC = () => {
       */}
 
       {/* Left Wall Visual */}
-      <WallVisual
+      {/* <WallVisual
         position={[-width / 2, 0, 3]} // Shifted Z to center of room
         rotation={[0, Math.PI / 2, 0]}
         size={[10, height]} // [Depth, Height]
-      />
+      /> */}
 
       {/* Right Wall Visual */}
-      <WallVisual
+      {/* <WallVisual
         position={[width / 2, 0, 3]}
         rotation={[0, -Math.PI / 2, 0]}
         size={[10, height]}
-      />
+      /> */}
 
       {/* Top Wall Visual (XZ Plane -> Rotated X 90 -> Local X=X, Local Y=Z)
           Global X Size: 5. Global Z Size: 10.
           Args: [5, 10].
           Center: X=0, Z=3.
       */}
-      <WallVisual
+      {/* <WallVisual
         position={[0, height / 2, 3]}
         rotation={[Math.PI / 2, 0, 0]}
         size={[width, 10]}
-      />
+      /> */}
 
       {/* Bottom Wall Visual */}
-      <WallVisual
+      {/* <WallVisual
         position={[0, -height / 2, 3]}
         rotation={[-Math.PI / 2, 0, 0]}
         size={[width, 10]}
-      />
+      /> */}
     </group>
   );
 };

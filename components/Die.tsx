@@ -79,6 +79,9 @@ const Die: React.FC<DieProps> = ({ position, sensorRef }) => {
         receiveShadow
         onClick={handlePointerDown}
       >
+        {/* Fake GI / Color Bleed */}
+        <pointLight intensity={0.5} color="#ff0000" distance={2.5} decay={2} />
+
         {/* 
                 MeshPhysicalMaterial is key for the "Glass/Acrylic" look.
               */}

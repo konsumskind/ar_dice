@@ -1,6 +1,6 @@
 import React, { MutableRefObject, useRef, useState, useEffect, Suspense } from 'react';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
-import { Physics, Debug } from '@react-three/cannon';
+import { Physics } from '@react-three/cannon';
 import { Environment } from '@react-three/drei';
 import * as THREE from 'three';
 import Die from './Die';
@@ -89,11 +89,30 @@ const CameraRig = ({ sensorRef }: { sensorRef: MutableRefObject<any> }) => {
 export const Scene: React.FC<SceneProps> = ({ gravity, sensorRef }) => {
     return (
         <Canvas
+            shadows
             dpr={[1, 2]} // Support high-DPI screens for crisp edges
             camera={{ position: [0, -6, 14], fov: 40 }}
             style={{ width: '100%', height: '100%' }}
             gl={{ alpha: true, antialias: true, toneMapping: THREE.ACESFilmicToneMapping, toneMappingExposure: 1.2 }}
         >
+            {/* Lights */}
+            <ambientLight intensity={-0.5} />
+            <directionalLight
+                position={[10, 10, 10]}
+                intensity={1}
+                castShadow
+                shadow-mapSize={[2048, 2048]}
+                shadow-bias={-0.0001}
+            />
+            <spotLight
+                position={[0, 0, 10]}
+                angle={0.5}
+                penumbra={1}
+                intensity={10}
+                castShadow
+                shadow-mapSize={[2048, 2048]}
+            />
+
             <Suspense fallback={null}>
                 <CameraRig sensorRef={sensorRef} />
 
@@ -103,12 +122,11 @@ export const Scene: React.FC<SceneProps> = ({ gravity, sensorRef }) => {
         */}
                 <Environment preset="city" background={false} blur={0.5} />
 
+
                 <Physics gravity={gravity} defaultContactMaterial={{ friction: 0.1, restitution: 0.5 }}>
-                    <Debug color="white" scale={1.1}>
-                        <Walls />
-                        <Die position={[0, 0, 5]} sensorRef={sensorRef} />
-                        <Die position={[1, 2, 5]} sensorRef={sensorRef} />
-                    </Debug>
+                    <Walls />
+                    <Die position={[0, 0, 5]} sensorRef={sensorRef} />
+                    <Die position={[1, 2, 5]} sensorRef={sensorRef} />
                 </Physics>
             </Suspense>
         </Canvas>
