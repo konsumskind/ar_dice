@@ -1,0 +1,8 @@
+{
+  "name": "AR Dice v02.0.1",
+  "description": "An augmented reality dice rolling app where 3D dice react to real-world gravity and physics within the bounds of your screen.",
+  "requestFramePermissions": [
+    "camera",
+    "microphone"
+  ]
+}
