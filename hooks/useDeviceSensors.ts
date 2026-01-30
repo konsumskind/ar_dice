@@ -15,11 +15,11 @@ interface SensorData {
 export const useDeviceSensors = (): SensorData => {
   const [permissionGranted, setPermissionGranted] = useState(false);
   // Default gravity (downwards on Y axis relative to screen if held upright, or Z if flat)
-  const [gravity, setGravity] = useState<[number, number, number]>([0, -29.4, 0]);
+  const [gravity, setGravity] = useState<[number, number, number]>([0, -20, 0]);
 
   // Use a ref to store real-time sensor data for the physics loop to avoid React re-render bottlenecks
   const sensorRef = useRef<SensorValues>({
-    gravity: [0, -29.4, 0],
+    gravity: [0, -20, 0],
     acceleration: [0, 0, 0],
   });
 
