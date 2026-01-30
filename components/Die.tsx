@@ -15,10 +15,10 @@ interface DieProps {
 
 const Die: React.FC<DieProps> = ({ position, sensorRef }) => {
   const [ref, api] = useBox(() => ({
-    mass: 5,
+    mass: 2,
     position,
     args: [1, 1, 1], // Physics body size
-    material: { friction: 0.2, restitution: 0.5 },
+    material: { friction: 0.1, restitution: 0.5 },
     allowSleep: false,
     linearDamping: 0.1,
     angularDamping: 0.1,
