@@ -1,30 +1,38 @@
 import React from 'react';
-import { useThree } from '@react-three/fiber';
 import { usePlane } from '@react-three/cannon';
-import * as THREE from 'three';
+import { useThree } from '@react-three/fiber';
+import { useTexture } from '@react-three/drei';
+import { RepeatWrapping } from 'three';
+
+// Helper component for visual walls
+const WallVisual: React.FC<{
+  position: [number, number, number];
+  rotation: [number, number, number];
+  size: [number, number];
+}> = ({ position, rotation, size }) => {
+  // Load texture
+  const texture = useTexture('textures/wall.png');
+
+  // Configure texture repeating
+  texture.wrapS = texture.wrapT = RepeatWrapping;
+  texture.repeat.set(size[0] / 2, size[1] / 2); // Scale texture repeat based on size
+
+  return (
+    <mesh position={position} rotation={rotation} receiveShadow>
+      <planeGeometry args={size} />
+      <meshStandardMaterial map={texture} roughness={0.8} />
+    </mesh>
+  );
+};
 
 export const Walls: React.FC = () => {
-  const { camera, viewport } = useThree();
+  // Fixed room size
+  const { viewport } = useThree();
+  const width = viewport.width;
+  const height = viewport.height;
+  const depth = 10; // From Z=-2 to Z=8 approx
 
-  // Calculate the viewport size specifically at the floor level (z = -2)
-  const { width: viewportWidth, height: viewportHeight } = viewport.getCurrentViewport(camera, [0, 0, -2]);
-
-  // Make the room smaller than the actual screen.
-  // Factor 0.85 creates a safety margin so the dice (which has thickness) 
-  // hits the wall and stays fully visible instead of getting cut off at the edge.
-  const width = viewportWidth * 0.85;
-  const height = viewportHeight * 0.85;
-
-  // Visual parameters
-  const wallHeight = 10; // Height of walls in Z-axis
-  const wallZ = 3;       // Center Z position for walls ((-2 + 8) / 2)
-  
-  // Using slightly off-white helps shadows appear more defined than pure #ffffff
-  const materialProps = { 
-    color: '#f5f5f5', 
-    roughness: 0.8,
-    metalness: 0.1
-  };
+  // Physics Definitions (Invisible Infinite Planes)
 
   // Floor (Physics)
   usePlane(() => ({
@@ -33,10 +41,10 @@ export const Walls: React.FC = () => {
     type: 'Static',
     material: { friction: 0.1, restitution: 0.5 }
   }));
-  
+
   // Ceiling (Physics)
   usePlane(() => ({
-    position: [0, 0, 8], 
+    position: [0, 0, 8],
     rotation: [0, -Math.PI, 0],
     type: 'Static',
   }));
@@ -45,57 +53,81 @@ export const Walls: React.FC = () => {
   usePlane(() => ({
     position: [-width / 2, 0, 0],
     rotation: [0, Math.PI / 2, 0],
-  }));
+  }), undefined, [width]);
 
   // Right Wall (Physics)
   usePlane(() => ({
     position: [width / 2, 0, 0],
     rotation: [0, -Math.PI / 2, 0],
-  }));
+  }), undefined, [width]);
 
   // Top Wall (Physics)
   usePlane(() => ({
     position: [0, height / 2, 0],
     rotation: [Math.PI / 2, 0, 0],
-  }));
+  }), undefined, [height]);
 
   // Bottom Wall (Physics)
   usePlane(() => ({
     position: [0, -height / 2, 0],
     rotation: [-Math.PI / 2, 0, 0],
-  }));
+  }), undefined, [height]);
 
   return (
     <group>
-      {/* Floor Visual */}
-      <mesh position={[0, 0, -2]} receiveShadow>
-        <planeGeometry args={[width, height]} />
-        <meshStandardMaterial {...materialProps} />
-      </mesh>
+      {/* Floor Visual (5x5) */}
+      <WallVisual position={[0, 0, -2]} rotation={[0, 0, 0]} size={[width, height]} />
+
+      {/* Ceiling Visual (5x5) */}
+      <WallVisual position={[0, 0, 8]} rotation={[0, -Math.PI, 0]} size={[width, height]} />
+
+      {/* Left Wall Visual (YZ Plane -> args: [Depth, Height] based on rotation?) 
+          Plane is XY. Rotated Y 90 -> YZ.
+          Local X maps to Global Z. Local Y maps to Global Y.
+          Global Z size is 10 (from -2 to 8). Global Y size is 5.
+          So args should be [10, 5].
+          Center Z: (-2 + 8)/2 = 3.
+          Center Y: 0.
+          Position X: -2.5.
+          Note: Physics wall was at Z=0? No, standard plane is infinite.
+          But for visual box, we need correct center.
+          The defined "room" limits:
+          Z from -2 to 8. Midpoint Z = 3. Length = 10.
+          Y from -2.5 to 2.5. Midpoint Y = 0. Length = 5.
+          X from -2.5 to 2.5. Midpoint X = 0. Length = 5.
+      */}
 
       {/* Left Wall Visual */}
-      <mesh position={[-width / 2, 0, wallZ]} rotation={[0, Math.PI / 2, 0]} receiveShadow>
-        <planeGeometry args={[wallHeight, height]} />
-        <meshStandardMaterial {...materialProps} />
-      </mesh>
+      <WallVisual
+        position={[-width / 2, 0, 3]} // Shifted Z to center of room
+        rotation={[0, Math.PI / 2, 0]}
+        size={[10, height]} // [Depth, Height]
+      />
 
       {/* Right Wall Visual */}
-      <mesh position={[width / 2, 0, wallZ]} rotation={[0, -Math.PI / 2, 0]} receiveShadow>
-        <planeGeometry args={[wallHeight, height]} />
-        <meshStandardMaterial {...materialProps} />
-      </mesh>
+      <WallVisual
+        position={[width / 2, 0, 3]}
+        rotation={[0, -Math.PI / 2, 0]}
+        size={[10, height]}
+      />
 
-      {/* Top Wall Visual */}
-      <mesh position={[0, height / 2, wallZ]} rotation={[Math.PI / 2, 0, 0]} receiveShadow>
-        <planeGeometry args={[width, wallHeight]} />
-        <meshStandardMaterial {...materialProps} />
-      </mesh>
+      {/* Top Wall Visual (XZ Plane -> Rotated X 90 -> Local X=X, Local Y=Z)
+          Global X Size: 5. Global Z Size: 10.
+          Args: [5, 10].
+          Center: X=0, Z=3.
+      */}
+      <WallVisual
+        position={[0, height / 2, 3]}
+        rotation={[Math.PI / 2, 0, 0]}
+        size={[width, 10]}
+      />
 
       {/* Bottom Wall Visual */}
-      <mesh position={[0, -height / 2, wallZ]} rotation={[-Math.PI / 2, 0, 0]} receiveShadow>
-        <planeGeometry args={[width, wallHeight]} />
-        <meshStandardMaterial {...materialProps} />
-      </mesh>
+      <WallVisual
+        position={[0, -height / 2, 3]}
+        rotation={[-Math.PI / 2, 0, 0]}
+        size={[width, 10]}
+      />
     </group>
   );
 };
