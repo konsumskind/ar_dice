@@ -10,10 +10,49 @@ export default function App() {
 
   const handleStart = async () => {
     await requestPermission();
+    if (document.documentElement.requestFullscreen) {
+      await document.documentElement.requestFullscreen();
+    }
+    window.history.pushState({ view: 'ar-experience' }, '');
     setStarted(true);
     // Show toast shortly after starting
     setShowToast(true);
   };
+
+  // Handle back button and fullscreen changes
+  useEffect(() => {
+    const handlePopState = () => {
+      // User pressed back button
+      if (document.fullscreenElement) {
+        document.exitFullscreen().catch((err) => console.log(err));
+      }
+      setStarted(false);
+    };
+
+    const handleFullscreenChange = () => {
+      // If user exited fullscreen via browser UI, we treat it as ending the session?
+      // Or just let them play in windowed mode?
+      // Implementing sync with 'started' state implies backing out.
+      if (!document.fullscreenElement && started) {
+        // If we are still "started" but fullscreen is gone, maybe we just pop history to keep it clean?
+        // But popping history triggers popstate which sets started(false).
+        // Let's just ensure if user manually exits FS, we leave it as is, or we go back.
+        // For a seamless "Mobile App" feel, usually FS exit = Quit.
+        // But to avoid loops/complexity with history, let's just listen to popstate primarily.
+
+        // If the user exits fullscreen manually (ESC), they get windowed AR. 
+        // If they press back then, they go to start screen.
+      }
+    };
+
+    window.addEventListener('popstate', handlePopState);
+    document.addEventListener('fullscreenchange', handleFullscreenChange);
+
+    return () => {
+      window.removeEventListener('popstate', handlePopState);
+      document.removeEventListener('fullscreenchange', handleFullscreenChange);
+    };
+  }, [started]);
 
   // Hide toast automatically after 6 seconds
   useEffect(() => {
