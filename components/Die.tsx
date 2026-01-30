@@ -18,7 +18,7 @@ const Die: React.FC<DieProps> = ({ position, sensorRef }) => {
     mass: 2,
     position,
     args: [1, 1, 1], // Physics body size
-    material: { friction: 1, restitution: 0.5 },
+    material: { friction: 0.5, restitution: 0.5 },
     allowSleep: false,
     linearDamping: 0.1,
     angularDamping: 0.1,
