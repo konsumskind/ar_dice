@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { CameraBackground } from './components/CameraBackground';
+
 import { Scene } from './components/Scene';
 import { useDeviceSensors } from './hooks/useDeviceSensors';
 
@@ -48,7 +48,7 @@ export default function App() {
             Start Experience
           </button>
         </div>
-        
+
         {/* Decorative background */}
         <div className="absolute inset-0 opacity-20 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-neutral-700 via-neutral-900 to-black"></div>
       </div>
@@ -57,8 +57,8 @@ export default function App() {
 
   return (
     <div className="relative h-screen w-screen overflow-hidden select-none">
-      {/* 1. The Camera Feed */}
-      <CameraBackground />
+      {/* 1. The Background */}
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-gray-800 via-gray-900 to-black -z-10" />
 
       {/* 2. The 3D Scene */}
       <div className="absolute inset-0 z-10">
@@ -66,15 +66,14 @@ export default function App() {
       </div>
 
       {/* 3. Overlay UI */}
-      <div 
-        className={`absolute bottom-10 left-0 right-0 z-20 flex justify-center pointer-events-none transition-all duration-1000 ease-in-out transform ${
-          showToast ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
-        }`}
+      <div
+        className={`absolute bottom-10 left-0 right-0 z-20 flex justify-center pointer-events-none transition-all duration-1000 ease-in-out transform ${showToast ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
+          }`}
       >
-         <div className="bg-black/60 backdrop-blur-md text-white px-6 py-3 rounded-full text-sm font-medium border border-white/10 shadow-xl text-center">
-            Tap screen to calibrate view<br/>
-            <span className="text-xs text-gray-400">Shake to roll</span>
-         </div>
+        <div className="bg-black/60 backdrop-blur-md text-white px-6 py-3 rounded-full text-sm font-medium border border-white/10 shadow-xl text-center">
+          Tap screen to calibrate view<br />
+          <span className="text-xs text-gray-400">Shake to roll</span>
+        </div>
       </div>
     </div>
   );
