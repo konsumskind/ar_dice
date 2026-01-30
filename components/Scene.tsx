@@ -21,7 +21,7 @@ const CameraRig = ({ sensorRef }: { sensorRef: MutableRefObject<any> }) => {
     const { gl } = useThree();
 
     // Pivot point: The center of the floor
-    const pivot = new THREE.Vector3(0, 0, -2);
+    const pivot = new THREE.Vector3(0, 0, -1);
     const targetPos = new THREE.Vector3();
     const dummyVec = new THREE.Vector3();
 
