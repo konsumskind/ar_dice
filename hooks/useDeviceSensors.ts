@@ -15,11 +15,11 @@ interface SensorData {
 export const useDeviceSensors = (): SensorData => {
   const [permissionGranted, setPermissionGranted] = useState(false);
   // Default gravity (downwards on Y axis relative to screen if held upright, or Z if flat)
-  const [gravity, setGravity] = useState<[number, number, number]>([0, -9.8, 0]);
+  const [gravity, setGravity] = useState<[number, number, number]>([0, -29.4, 0]);
 
   // Use a ref to store real-time sensor data for the physics loop to avoid React re-render bottlenecks
   const sensorRef = useRef<SensorValues>({
-    gravity: [0, -9.8, 0],
+    gravity: [0, -29.4, 0],
     acceleration: [0, 0, 0],
   });
 
@@ -67,7 +67,12 @@ export const useDeviceSensors = (): SensorData => {
       // Physics Gravity X = -Sensor X
       // Physics Gravity Y = -Sensor Y
       // Physics Gravity Z = -Sensor Z
-      const newGravity: [number, number, number] = [-gx, -gy, -gz];
+      const GRAVITY_MULTIPLIER = 3;
+      const newGravity: [number, number, number] = [
+        -gx * GRAVITY_MULTIPLIER,
+        -gy * GRAVITY_MULTIPLIER,
+        -gz * GRAVITY_MULTIPLIER
+      ];
 
       setGravity(newGravity); // Update state for declarative Physics prop
       sensorRef.current.gravity = newGravity; // Update ref for imperative access
@@ -102,7 +107,7 @@ export const useDeviceSensors = (): SensorData => {
 
       const targetGx = x * GRAVITY_STRENGTH;
       const targetGz = y * GRAVITY_STRENGTH;
-      const targetGy = -9.8;
+      const targetGy = -29.4;
 
       const newGravity: [number, number, number] = [targetGx, targetGy, targetGz];
       setGravity(newGravity);
@@ -122,7 +127,7 @@ export const useDeviceSensors = (): SensorData => {
 
       const targetGx = x * GRAVITY_STRENGTH;
       const targetGz = y * GRAVITY_STRENGTH;
-      const targetGy = -9.8;
+      const targetGy = -29.4;
 
       const newGravity: [number, number, number] = [targetGx, targetGy, targetGz];
       setGravity(newGravity);
