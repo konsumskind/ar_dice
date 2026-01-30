@@ -27,7 +27,7 @@ export const Walls: React.FC = () => {
 
   // Floor (Physics)
   usePlane(() => ({
-    position: [0, 0, -1],
+    position: [0, 0, 0],
     rotation: [0, 0, 0],
     type: 'Static',
     material: { friction: 0.1, restitution: 0.5 }
@@ -67,7 +67,7 @@ export const Walls: React.FC = () => {
   return (
     <group>
       {/* Floor Visual (5x5) */}
-      <WallVisual position={[0, 0, -1]} rotation={[0, 0, 0]} size={[99999, 99999]} />
+      <WallVisual position={[0, 0, 0]} rotation={[0, 0, 0]} size={[99999, 99999]} />
 
       {/* Ceiling Visual (5x5)
       <WallVisual position={[0, 0, 8]} rotation={[0, -Math.PI, 0]} size={[width, height]} /> */}

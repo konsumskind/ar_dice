@@ -21,7 +21,7 @@ const CameraRig = ({ sensorRef }: { sensorRef: MutableRefObject<any> }) => {
     const { gl } = useThree();
 
     // Pivot point: The center of the floor
-    const pivot = new THREE.Vector3(0, 0, -1);
+    const pivot = new THREE.Vector3(0, 0, 0);
     const targetPos = new THREE.Vector3();
     const dummyVec = new THREE.Vector3();
 
@@ -99,7 +99,7 @@ export const Scene: React.FC<SceneProps> = ({ gravity, sensorRef }) => {
             <ambientLight intensity={-0.5} />
             <directionalLight
                 position={[10, 10, 10]}
-                intensity={1}
+                intensity={3}
                 castShadow
                 shadow-mapSize={[2048, 2048]}
                 shadow-bias={-0.0001}
