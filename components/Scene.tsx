@@ -55,8 +55,8 @@ const CameraRig = ({ sensorRef }: { sensorRef: MutableRefObject<any> }) => {
         const { gravity } = sensorRef.current;
 
         // Normalize Gravity
-        const rawNormGx = gravity[0] / 9.8;
-        const rawNormGy = gravity[1] / 9.8;
+        const rawNormGx = gravity[0] / 12;
+        const rawNormGy = gravity[1] / 12;
 
         // Apply Calibration Offset
         const normGx = rawNormGx - (isCalibrated ? calibrationOffset.current.x : 0);
